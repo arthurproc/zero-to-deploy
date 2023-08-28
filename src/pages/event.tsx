@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import EventQuestionForm from "../components/event-question-form";
 import EventQuestion from "../components/event-question";
 import { Question } from "../types";
-import { addDoc, collection, getDocs, onSnapshot, orderBy, query } from "firebase/firestore";
+import { addDoc, collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useAuth } from "../context/auth.context";
 
@@ -39,7 +38,7 @@ function Event() {
         newQuestions.push({
           ...question,
           createdAt: question.createdAt.toDate(),
-        });
+        } as Question);
       });
 
       setQuestions(newQuestions);
