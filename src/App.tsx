@@ -1,9 +1,12 @@
 import { Route, Routes } from "react-router-dom"
+import Login from "./pages/login";
+import Event from "./pages/event";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={ <h1 className="text-3xl font-bold underline text-red-500">Hello world!</h1> } />
+      <Route path="/" element={ <Login /> } />
+      <Route path="/event" element={ <Event /> } />
     </Routes>
   );
 }
