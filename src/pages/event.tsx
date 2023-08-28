@@ -5,10 +5,31 @@ import { Question } from "../types";
 import { addDoc, collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useAuth } from "../context/auth.context";
+import { Link } from "react-router-dom";
 
 function Event() {
-  const { user } = useAuth();
+  const { user, loggedIn } = useAuth();
   const [questions, setQuestions] = useState<Question[]>([]);
+
+  if (!loggedIn) {
+    return (
+      <div className="h-screen flex flex-col justify-center items-center">
+        <div className="w-96 flex flex-col justify-center items-center bg-gray-800 rounded py-4 px-4">
+          <h2
+            className='text-3xl text-white font-bold text-center mb-8'
+          >
+            Boas-vindas ao Ask32!!
+          </h2>
+          <Link
+            to="/"
+            className="bg-blue-500 text-white font-bold py-2 px-4 rounded flex items-center"
+          >
+            Realizar Login
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   const handleSend = async (message: string) => {
     if (!user) {

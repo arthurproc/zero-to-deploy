@@ -1,8 +1,17 @@
 import { BsGoogle } from 'react-icons/bs';
 import { useAuth } from '../context/auth.context';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 function Login() {
   const { loginWithGoogle, loggedIn } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loggedIn) {
+      navigate('/event');
+    }
+  }, [loggedIn]); 
 
   return (
     <div className="h-screen flex flex-col justify-center items-center">
