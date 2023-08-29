@@ -9,7 +9,7 @@ function Login() {
 
   useEffect(() => {
     if (loggedIn) {
-      navigate('/event');
+      navigate('/dashboard');
     }
   }, [loggedIn]); 
 

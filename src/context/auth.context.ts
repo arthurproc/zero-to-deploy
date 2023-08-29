@@ -13,4 +13,5 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export default AuthContext;
 
+// useAuth()  ==  useContext(AuthContext)
 export const useAuth = () => useContext(AuthContext);

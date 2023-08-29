@@ -1,15 +1,71 @@
 import { useEffect, useState } from "react";
 import EventQuestionForm from "../components/event-question-form";
 import EventQuestion from "../components/event-question";
-import { Question } from "../types";
-import { addDoc, collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { QAEvent, Question } from "../types";
+import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useAuth } from "../context/auth.context";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 function Event() {
   const { user, loggedIn } = useAuth();
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [QAevent, setQAEvent] = useState<QAEvent | null>(null);
+  const { eventId } = useParams();
+
+  // busca as perguntas do evento
+  // precisamos buscar as perguntas do evento de id = eventId
+  useEffect(() => {
+    if (!eventId) {
+      return;
+    }
+
+    const questionsQuery = query(collection(db, `events/${eventId}/questions`), orderBy('createdAt'));
+
+    const unsub = onSnapshot(questionsQuery, (querySnapshot) => {
+      const newQuestions: Question[] = [];
+      querySnapshot.forEach((doc) => {
+        const question = doc.data();
+        newQuestions.push({
+          ...question,
+          createdAt: question.createdAt.toDate(),
+        } as Question);
+      });
+
+      setQuestions(newQuestions);
+    });
+
+    return unsub;
+  }, [eventId]);
+
+
+  useEffect(() => {
+    if (!eventId) {
+      return;
+    }
+
+    const fetchEventData = async () => {
+      const docRef = doc(db, "events", eventId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        // tenho os dados do firebase
+        const docData = docSnap.data();
+
+        setQAEvent({
+          id: docData.id,
+          title: docData?.title,
+          description: docData?.description,
+          createdAt: docData?.createdAt?.toDate(),
+          creatorId: docData?.creatorId,
+        });
+      } else {
+        console.log("Evento não encontrado!");
+      }
+    }
+
+    fetchEventData();
+  }, [eventId]);
 
   if (!loggedIn) {
     return (
@@ -28,16 +84,18 @@ function Event() {
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
+
+  // daqui pra baixo, não vai ser executado
   const handleSend = async (message: string) => {
     if (!user) {
       return;
     }
 
     try {
-      const docRef = await addDoc(collection(db, "questions"), {
+      const docRef = await addDoc(collection(db, `events/${eventId}/questions`), {
         question: message,
         authorId: user.uid,
         author: user.displayName,
@@ -49,28 +107,14 @@ function Event() {
     }
   };
 
-  useEffect(() => {
-    const questionsQuery = query(collection(db, "questions"), orderBy('createdAt'));
-
-    const unsub = onSnapshot(questionsQuery, (querySnapshot) => {
-      const newQuestions: Question[] = [];
-      querySnapshot.forEach((doc) => {
-        const question = doc.data();
-        newQuestions.push({
-          ...question,
-          createdAt: question.createdAt.toDate(),
-        } as Question);
-      });
-
-      setQuestions(newQuestions);
-    });
-
-    return unsub;
-  }, []);
-
   return (
     <div className="container m-auto">
-      <div className="flex justify-center items-center mt-20">
+      <div className="flex-col justify-center items-center mt-20">
+        <h2
+          className="text-3xl text-center mb-6"
+        >
+          {QAevent?.title}
+        </h2>
         <EventQuestionForm handleSend={handleSend} />
       </div>
       <div className="flex flex-col justify-center items-center">

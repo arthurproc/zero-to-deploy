@@ -1,12 +1,13 @@
-export type Event = {
+export type QAEvent = {
+  id?: string;
   title: string;
   description: string;
   creatorId: string;
-  questions: Question[];
   createdAt: Date;
 };
 
 export type Question = {
+  id?: string;
   question: string;
   author: string;
   authorId: string;
