@@ -17,8 +17,12 @@ function Dashboard() {
   };
 
   return (
-    <div>
-      Dashboard
+    <div className="container m-auto">
+      <h1
+        className="text-3xl font-bold mt-2 text-center mb-2"
+      >
+        Dashboard
+      </h1>
       <CreateQAEventForm onSubmit={handleCreateQAEvent} />
     </div>
   );

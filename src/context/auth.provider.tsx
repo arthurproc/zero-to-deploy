@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import AuthContext from "./auth.context"
-import { User } from "firebase/auth";
+import { User, signOut } from "firebase/auth";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../services/firebase";
 
@@ -16,6 +16,11 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch(error: any) {
       setErrorMessage(error?.message ?? 'Erro desconhecido');
     };
+  }
+
+  const logout = async () => {
+    await signOut(auth);
+    setUser(null);
   }
 
   const loggedIn = user ? true : false;
@@ -39,7 +44,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       loggedIn: loggedIn,
       loginWithGoogle,
       errorMessage,
-      logout: async () => setUser(null)
+      logout
     }}>
       { children }
     </AuthContext.Provider>
